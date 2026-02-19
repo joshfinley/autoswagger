@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "autoswagger"
+version = "2.0.0"
+description = "Detect unauthenticated access control issues via Swagger/OpenAPI documentation"
+requires-python = ">=3.11"
+dependencies = [
+    "requests",
+    "urllib3",
+    "beautifulsoup4",
+    "pyyaml",
+    "rich",
+    "presidio-analyzer",
+    "returns",
+    "defusedxml",
+]
+
+[project.scripts]
+autoswagger = "autoswagger.main:cli"

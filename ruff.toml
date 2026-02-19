@@ -1,0 +1,36 @@
+line-length = 120
+
+[lint]
+select = [
+    "ALL",
+]
+ignore = [
+    # Style/doc rules we don't want
+    "D",       # pydocstyle — no enforced docstring style
+    "ANN",     # flake8-annotations — we use mypy for type checking
+    "ERA",     # eradicate — commented-out code detection
+    "T20",     # flake8-print — we use rich console, not print
+    "FIX",     # fixme comments
+    "TD",      # todo comments
+
+    # Rules that don't apply to this codebase
+    "SLF001",  # private member access — required by `returns` library ._inner_value
+    "PLR0913", # too many arguments — orchestration functions need them
+    "FBT001",  # boolean positional args — over-pedantic for internal functions
+    "FBT002",  # boolean default positional args
+    "FBT003",  # boolean positional value in call
+    "PLR2004", # magic value comparison — HTTP status codes are self-documenting
+    "TRY003",  # long exception messages — we use EM101/EM102 instead
+    "ARG001",  # unused function arguments — signal handlers, interface contracts
+    "PT028",   # pytest default args — false positive on test_ prefix (not test functions)
+    "C901",    # complexity — already flattened from 14 levels, 11-12 is acceptable
+    "BLE001",  # blind except — intentional in thread pool executors
+    "PLW0603", # global statement — lazy init pattern for Presidio
+    "N817",    # camelcase imported as acronym — ET is universal convention
+    "S106",    # hardcoded password — false positive on secret_type field name
+    "TC002",   # typing-only third-party import — marginal gain, adds complexity
+    "TC003",   # typing-only stdlib import — marginal gain, adds complexity
+]
+
+[lint.isort]
+known-first-party = ["autoswagger"]

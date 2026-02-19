@@ -1,18 +1,15 @@
 FROM python:3.13-slim
 
-# Set workdir early
 WORKDIR /app
 
-# Copy just what's needed
-COPY requirements.txt autoswagger.py ./
+# Install dependencies first (layer caching)
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    python -m spacy download en_core_web_lg
 
-# Install Python packages and SpaCy model, then cleanup
-RUN pip install --no-cache-dir --upgrade pip 
-RUN pip install --no-cache-dir -r requirements.txt && \
-    python -m spacy download en_core_web_lg && \
-    rm -rf ~/.cache/pip
+# Copy source
+COPY autoswagger/ autoswagger/
 
-# Set entrypoint directly (no chmod needed since invoked via python)
-ENTRYPOINT ["python", "autoswagger.py"]
-
+ENTRYPOINT ["python", "-m", "autoswagger"]
 CMD ["-h"]
