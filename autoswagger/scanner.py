@@ -67,6 +67,8 @@ DIRECT_SPEC_PATHS: list[str] = sorted({
     "/swagger-ui.json", "/swagger-ui.yaml",
 })
 
+EXTRA_DIRECT_SPEC_PATHS: list[str] = sorted(i.split(".")[0] for i in DIRECT_SPEC_PATHS if i not in SWAGGER_UI_PATHS)
+
 TEST_VALUES: dict[str, list[Any]] = {
     "integer": [1, 2, 100, -1, 0, 999, 123456],
     "string": [
@@ -403,7 +405,7 @@ def discover_spec_by_direct_paths(
     rate_limiter: RateLimiter,
 ) -> dict[str, Any]:
     """Brute-force DIRECT_SPEC_PATHS for a spec."""
-    for path in DIRECT_SPEC_PATHS:
+    for path in DIRECT_SPEC_PATHS + EXTRA_DIRECT_SPEC_PATHS:
         spec_url = urljoin(base_url, path)
         logger.debug("Trying direct path: %s", spec_url)
         result = _fetch_and_validate_spec(session, spec_url, rate_limiter)
