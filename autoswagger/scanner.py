@@ -41,6 +41,13 @@ SWAGGER_UI_PATHS: list[str] = sorted({
     "/api/", "/api/api-docs/index.html", "/api/api/",
     "/api/config", "/api/doc/", "/api/spec/", "/spec/",
     "/index.html", "/swagger-ui/", "/swagger-ui/index.html",
+    "/swagger/docs/v1"
+})
+
+# make a set for uniqueness, then convert to list 
+EXTRA_UI_PATHS: list[str] = sorted({
+    base for i in SWAGGER_UI_PATHS # iterate over SWAGGER_UI_PATHS
+    if (base := i.split(".", 1)[0]) not in SWAGGER_UI_PATHS # set base to the first index in the split and check if it doesn't alread exist in the ui paths
 })
 
 DIRECT_SPEC_PATHS: list[str] = sorted({
@@ -65,6 +72,11 @@ DIRECT_SPEC_PATHS: list[str] = sorted({
     "/api-docs/swagger-ui.json", "/api-docs/swagger-ui.yaml",
     "/api-docs/openapi.json", "/api-docs/openapi.yaml",
     "/swagger-ui.json", "/swagger-ui.yaml",
+})
+
+EXTRA_DIRECT_SPEC_PATHS : list[str] = sorted({
+    base for i in DIRECT_SPEC_PATHS # iterate over DIRECT_SPEC_PATHS
+    if (base := i.split(".", 1)[0]) not in DIRECT_SPEC_PATHS # set base to the first index in the split and check if it doesn't alread exist in the direct spec paths
 })
 
 TEST_VALUES: dict[str, list[Any]] = {
@@ -375,7 +387,7 @@ def find_swagger_ui_docs(
     rate_limiter: RateLimiter,
 ) -> dict[str, Any]:
     """Probe SWAGGER_UI_PATHS and extract spec. Max nesting: 3."""
-    for path in SWAGGER_UI_PATHS:
+    for path in SWAGGER_UI_PATHS + EXTRA_UI_PATHS:
         url = urljoin(base_url, path)
         logger.debug("Checking Swagger UI at %s", url)
         resp_result = http_get(session, url, rate_limiter)
@@ -403,7 +415,7 @@ def discover_spec_by_direct_paths(
     rate_limiter: RateLimiter,
 ) -> dict[str, Any]:
     """Brute-force DIRECT_SPEC_PATHS for a spec."""
-    for path in DIRECT_SPEC_PATHS:
+    for path in DIRECT_SPEC_PATHS + EXTRA_DIRECT_SPEC_PATHS:
         spec_url = urljoin(base_url, path)
         logger.debug("Trying direct path: %s", spec_url)
         result = _fetch_and_validate_spec(session, spec_url, rate_limiter)
