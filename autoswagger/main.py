@@ -171,7 +171,7 @@ def run_scan(config: ScanConfig) -> tuple[list[EndpointResult], ScanStats]:
     Handles Ctrl+C for clean shutdown.
     """
     cancel_event = threading.Event()
-    session = create_session(config.proxy, insecure=config.insecure)
+    session = create_session(config.proxy, insecure=config.insecure, user_agent=config.user_agent)
     rate_limiter = RateLimiter(config.rate, cancel_event)
     processed_urls = _process_input(config.urls)
 
@@ -421,6 +421,7 @@ def cli() -> None:
     parser.add_argument("--proxy", type=str, default=None, help="HTTP proxy URL (e.g. http://127.0.0.1:8080)")
     parser.add_argument("-k", "--insecure", action="store_true", help="Disable SSL certificate verification")
     parser.add_argument("--concurrency", type=int, default=0, help="Thread count (default: 0 = sequential)")
+    parser.add_argument("--user-agent", type=str, default="Autoswagger/2.0", help="Custom User-Agent header string")
 
     args = parser.parse_args()
 
@@ -449,6 +450,7 @@ def cli() -> None:
         proxy=args.proxy,
         insecure=args.insecure,
         concurrency=args.concurrency,
+        user_agent=args.user_agent,
     )
 
     setup_logging(config.verbose)

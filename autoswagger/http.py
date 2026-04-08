@@ -71,10 +71,14 @@ class RateLimiter:
 # ---------------------------------------------------------------------------
 
 
-def create_session(proxy: str | None = None, insecure: bool = False) -> requests.Session:
+def create_session(
+    proxy: str | None = None,
+    insecure: bool = False,
+    user_agent: str = "Autoswagger/2.0",
+) -> requests.Session:
     """Create a requests.Session with proxy and SSL config."""
     session = requests.Session()
-    session.headers.update({"User-Agent": "Autoswagger/2.0"})
+    session.headers.update({"User-Agent": user_agent})
     if insecure:
         session.verify = False
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
